@@ -1,6 +1,6 @@
 
 import React from 'react';
-import VideoSnapshot from '../src/components/FileUpload';
+import VideoSnapshot from '../src/components/VideoSnapshot';
 
 export const App = () => {
   return(
