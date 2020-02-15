@@ -1,6 +1,6 @@
 import React, { createRef, useState } from "react";
 import ReactPlayer from "react-player";
-import { Box } from "@material-ui/core";
+import { Button, Box } from "@material-ui/core";
 
 export function VideoCanvas() {
   let videoRef = createRef();
@@ -8,23 +8,23 @@ export function VideoCanvas() {
   let imageRef = createRef();
   let linkRef = createRef();
   const [duration, setDuration] = useState();
+  const [snapshotTime, setsnapshotTime] = useState();
 
   const captureFrame = () => {
-    let video = videoRef.current.getInternalPlayer();
-    let canvas = canvasRef.current;
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
+    const video = videoRef.current
+    const videoPlayer = video.getInternalPlayer();
+    const canvas = canvasRef.current;
+    canvas.width = videoPlayer.videoWidth;
+    canvas.height = videoPlayer.videoHeight;
+        canvas.getContext("2d").drawImage(videoPlayer, 0, 0);
+        let dataUri = canvas.toDataURL("image/" + "jpeg");
+        // Setting image
+        linkRef.current.href = dataUri;
+        linkRef.current.download = "screenshot";
+        imageRef.current.src = dataUri;
 
-    canvas.getContext("2d").drawImage(video, 0, 0);
-    let dataUri = canvas.toDataURL("image/" + "jpeg");
-
-    // Setting image
-    linkRef.current.href = dataUri;
-    linkRef.current.download = "screenshot";
-    imageRef.current.src = dataUri;
-
-    setDuration(videoRef.current.getDuration());
-
+      setsnapshotTime(video.getCurrentTime());
+      setDuration(video.getDuration());
   };
 
   return (
@@ -54,12 +54,15 @@ export function VideoCanvas() {
           <b> Duration of the video in seconds: </b>
           {duration}
         </div>
+          <div>
+          <b>Time at which snapshot was taken(seconds): </b> {snapshotTime}
 
+          </div>
         <div style={{ marginTop: 30 }}>
           <b>Click on the Screenshot to download it:</b>
         </div>
         <a href="javascript;" id="link" ref={linkRef}>
-          <img id="img" ref={imageRef} src=""/>
+          <img id="img" ref={imageRef} src="" alt="screenshot" />
         </a>
         <canvas ref={canvasRef} style={{ display: "none" }} alt="" />
       </Box>
